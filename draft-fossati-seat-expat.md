@@ -205,7 +205,7 @@ Upon receipt of a Certificate message containing the `cmw_attestation` extension
 
 - Background Check Model:
   - Verify Integrity and Authenticity: The Evidence must be cryptographically verified against a known trust anchor, typically provided by the hardware manufacturer.
-  - Verify Certificate Request Binding and Freshness: The Evidence must be bound to the active TLS connection by verifying that the exporter value in the Evidence matches the exporter value computed using the label "EXPORTER-attestation" and the certificate_request_context as the exporter context. This verification ensures correct connection binding, provides freshness, and prevents replay.
+  - Verify Certificate Request Binding and Freshness: The Evidence must be bound to the active TLS connection by verifying that the exporter value in the Evidence matches the exporter value computed using the label "EXPORTER-cmw-attestation" and the certificate_request_context as the exporter context. This verification ensures correct connection binding, provides freshness, and prevents replay.
   - Evaluate Security Policy Compliance: The Evidence must be evaluated against the Relying Party's security policies to determine if the attesting device and the private key storage meet the required criteria.
 
 - Passport Model:
@@ -324,12 +324,12 @@ for TLS authentication.
 The attester binds the attestation Evidence to the active TLS connection. To do so, the attester derives a
 binding value using the TLS exporter. The exporter invocation uses:
 
-* the label "EXPORTER-attestation", and
+* the label "EXPORTER-cmw-attestation", and
 * the certificate_request_context from the CertificateRequest message as the context_value (as defined in Section 7.5 of {{-tls13}}). In a Background Check model, this value contains the Verifier-provided nonce; and
 * a key_length set to 256-bit (32 bytes).
 
 ~~~
-   TLS-Exporter("EXPORTER-attestation", certificate_request_context, 32)
+   TLS-Exporter("EXPORTER-cmw-attestation", certificate_request_context, 32)
 ~~~
 
 The binding value is defined as:
@@ -457,14 +457,12 @@ registry within the "Transport Layer Security (TLS) Parameters" registry group
 
 | Value                  | DTLS-OK | Recommended | Reference |
 |------------------------|---------|-------------|-----------|
-| EXPORTER-attestation   | Y       | Y           | {{&SELF}} |
+| EXPORTER-cmw-attestation | N       | Y           | {{&SELF}} |
 
 The registration procedure for this registry is Specification Required
-(Section 4 of {{!RFC5705}}). Section 6 of {{!RFC5705}} requires that no
-registered label be a prefix of any other registered label, so this document
-uses a single label for both the derivation in {{binding}} and the validation
-step that checks it, rather than distinct labels for the two. Section 4 of {{!RFC5705}} further notes that exporter labels
-SHOULD begin with "EXPORTER" to avoid collision with TLS PRF labels.
+(Section 4 of {{!RFC5705}}). A single label is used for both the derivation in
+{{binding}} and the validation step that checks it, because Section 6 of
+{{!RFC5705}} requires that no registered label be a prefix of any other.
 
 --- back
 
